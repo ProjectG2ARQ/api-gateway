@@ -1,0 +1,21 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logitrack-gateway-independiente
+    restart: on-failure
+    ports:
+      - "8066:8066"
+    environment:
+      SPRING_CONFIG_IMPORT: "optional:configserver:http://configserver:8085/"
+      SPRING_PROFILES_ACTIVE: "dev"
+      EUREKA_SERVER_URL: "http://eureka-server:8065/eureka/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8065/eureka/"
+    networks:
+      - logitrack-net
+
+networks:
+  logitrack-net:
+    name: logitrack-deployment_logitrack-net
+    external: true
