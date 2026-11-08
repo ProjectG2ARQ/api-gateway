@@ -42,7 +42,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         String path = request.getURI().getPath();
 
         // 1. Omitir validación en endpoints públicos
-        if (isPublicEndpoint(path)) {
+        if (isPublicEndpoint(request.getMethod(), path)) {
             return chain.filter(exchange);
         }
 
@@ -83,8 +83,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
     }
 
-    private boolean isPublicEndpoint(String path) {
-        return PUBLIC_ENDPOINTS.stream().anyMatch(path::contains);
+    private boolean isPublicEndpoint(HttpMethod method, String path) {
+        if (PUBLIC_ENDPOINTS.stream().anyMatch(path::contains)) {
+            return true;
+        }
+        // Permitir el registro de clientes sin token previo
+        return method == HttpMethod.POST && path.contains("/api/v1/clientes");
     }
 
     private Claims validateToken(String token) {
