@@ -99,11 +99,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
     private boolean hasRequiredRole(HttpMethod method, String path, String rol) {
         if (rol == null) return false;
 
-        // Reglas para Envíos (/applications/api-shipment)
+        // Reglas para Envíos y Clientes (/applications/api-shipment)
         if (path.contains("/api-shipment")) {
             if (method == HttpMethod.POST && path.contains("/envios")) {
                 return "CLIENTE".equalsIgnoreCase(rol) || "ADMIN".equalsIgnoreCase(rol);
@@ -113,6 +112,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             }
             if (method == HttpMethod.PATCH && path.contains("/repartidores")) {
                 return "ADMIN".equalsIgnoreCase(rol);
+            }
+            if (method == HttpMethod.DELETE && path.contains("/clientes")) {
+                return "ADMIN".equalsIgnoreCase(rol) || "CLIENTE".equalsIgnoreCase(rol);
             }
         }
 
